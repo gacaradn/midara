@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIDARA</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>MIDARA</h1>
+        <p id="current-date"></p>
+    </header>
+
+    <div class="tabs">
+        <button onclick="showTab('daily')">Daily To-Do</button>
+        <button onclick="showTab('reminders')">Reminders</button>
+        <button onclick="showTab('earnings')">Earnings</button>
+    </div>
+
+    <div id="daily" class="tab-content">
+        <div class="columns">
+            <div class="column">
+                <h2>Gachara</h2>
+                <form id="gachara-form">
+                    <input type="text" placeholder="Task Name" required>
+                    <select onchange="toggleAmount(this)">
+                        <option value="other">Other</option>
+                        <option value="work">Work</option>
+                    </select>
+                    <input type="number" placeholder="Amount" style="display:none;" min="0">
+                    <input type="date" placeholder="Deadline" required>
+                    <button type="button" onclick="addTask('Gachara')">Add Task</button>
+                </form>
+                <table id="gachara-table">
+                    <thead><tr><th>Name</th><th>Type</th><th>Amount</th><th>Deadline</th><th>Done</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="column">
+                <h2>Mideva</h2>
+                <form id="mideva-form">
+                    <input type="text" placeholder="Task Name" required>
+                    <select onchange="toggleAmount(this)">
+                        <option value="other">Other</option>
+                        <option value="work">Work</option>
+                    </select>
+                    <input type="number" placeholder="Amount" style="display:none;" min="0">
+                    <input type="date" placeholder="Deadline" required>
+                    <button type="button" onclick="addTask('Mideva')">Add Task</button>
+                </form>
+                <table id="mideva-table">
+                    <thead><tr><th>Name</th><th>Type</th><th>Amount</th><th>Deadline</th><th>Done</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="reminders" class="tab-content" style="display:none;">
+        <h2>Reminders (Undone Tasks, Most Overdue First)</h2>
+        <table id="reminders-table">
+            <thead><tr><th>Person</th><th>Name</th><th>Deadline</th><th>Overdue Days</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="earnings" class="tab-content" style="display:none;">
+        <h2>Earnings</h2>
+        <div id="earnings-summary"></div>
+    </div>
+
+    <div class="file-controls">
+        <input type="file" id="upload-csv" accept=".csv" onchange="loadCSV()">
+        <button onclick="downloadCSV()">Download data.csv</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
