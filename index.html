@@ -13,7 +13,7 @@
     </header>
 
     <div class="tabs">
-        <button onclick="showTab('daily')">Daily To-Do</button>
+        <button onclick="showTab('daily')" class="active">Daily To-Do</button>
         <button onclick="showTab('reminders')">Reminders</button>
         <button onclick="showTab('earnings')">Earnings</button>
     </div>
@@ -28,8 +28,8 @@
                         <option value="other">Other</option>
                         <option value="work">Work</option>
                     </select>
-                    <input type="number" placeholder="Amount" style="display:none;" min="0">
-                    <input type="date" placeholder="Deadline" required>
+                    <input type="number" placeholder="Amount (KSh)" style="display:none;" min="0">
+                    <input type="date" required>
                     <button type="button" onclick="addTask('Gachara')">Add Task</button>
                 </form>
                 <table id="gachara-table">
@@ -37,6 +37,7 @@
                     <tbody></tbody>
                 </table>
             </div>
+
             <div class="column">
                 <h2>Mideva</h2>
                 <form id="mideva-form">
@@ -45,8 +46,8 @@
                         <option value="other">Other</option>
                         <option value="work">Work</option>
                     </select>
-                    <input type="number" placeholder="Amount" style="display:none;" min="0">
-                    <input type="date" placeholder="Deadline" required>
+                    <input type="number" placeholder="Amount (KSh)" style="display:none;" min="0">
+                    <input type="date" required>
                     <button type="button" onclick="addTask('Mideva')">Add Task</button>
                 </form>
                 <table id="mideva-table">
@@ -58,7 +59,7 @@
     </div>
 
     <div id="reminders" class="tab-content" style="display:none;">
-        <h2>Reminders (Undone Tasks, Most Overdue First)</h2>
+        <h2>Reminders (Undone Tasks – Most Overdue First)</h2>
         <table id="reminders-table">
             <thead><tr><th>Person</th><th>Name</th><th>Deadline</th><th>Overdue Days</th></tr></thead>
             <tbody></tbody>
@@ -66,14 +67,14 @@
     </div>
 
     <div id="earnings" class="tab-content" style="display:none;">
-        <h2>Earnings</h2>
+        <h2>Earnings Summary</h2>
         <div id="earnings-summary"></div>
     </div>
 
-    <div class="file-controls">
-        <input type="file" id="upload-csv" accept=".csv" onchange="loadCSV()">
-        <button onclick="downloadCSV()">Download data.csv</button>
-    </div>
+    <!-- Firebase SDKs (compat version for simple syntax) -->
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 
     <script src="script.js"></script>
 </body>
