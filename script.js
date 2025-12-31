@@ -1,79 +1,122 @@
+// Your Firebase configuration (from your console)
+const firebaseConfig = {
+  apiKey: "AIzaSyBHPTItWQcYgwmLKEoopVMQe6d77fM68DU",
+  authDomain: "diary-midara.firebaseapp.com",
+  projectId: "diary-midara",
+  storageBucket: "diary-midara.firebasestorage.app",
+  messagingSenderId: "613969195802",
+  appId: "1:613969195802:web:5a40c4544b4a1dec4b72a3",
+  databaseURL: "https://diary-midara-default-rtdb.firebaseio.com"  // IMPORTANT: Added this!
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const tasksRef = db.ref('tasks');
+
 let tasks = [];
 let nextId = 1;
-const timezone = 'Africa/Nairobi'; // EAT (UTC+3)
+const timezone = 'Africa/Nairobi'; // East African Time
 
+// Optional: Anonymous sign-in (adds slight security)
+firebase.auth().signInAnonymously().catch(err => console.log("Auth error:", err));
+
+// === Date Functions ===
 function getCurrentDate() {
     const options = { timeZone: timezone, year: 'numeric', month: 'long', day: 'numeric' };
     return new Date().toLocaleDateString('en-US', options);
 }
 
 function getCurrentDateISO() {
-    const date = new Date();
-    const offset = 3 * 60 * 60 * 1000; // EAT offset
-    const eatDate = new Date(date.getTime() + offset);
-    return eatDate.toISOString().split('T')[0];
+    const now = new Date();
+    const offset = 3 * 60; // EAT is UTC+3
+    const eat = new Date(now.getTime() + offset * 60 * 1000);
+    return eat.toISOString().split('T')[0];
 }
 
 function updateDate() {
-    document.getElementById('current-date').textContent = `Current Date: ${getCurrentDate()}`;
+    document.getElementById('current-date').textContent = `Today: ${getCurrentDate()}`;
 }
 
+// === UI Helpers ===
 function toggleAmount(select) {
-    const amountInput = select.nextElementSibling;
-    amountInput.style.display = select.value === 'work' ? 'inline' : 'none';
-    amountInput.required = select.value === 'work';
-}
-
-function addTask(person) {
-    const form = person === 'Gachara' ? document.getElementById('gachara-form') : document.getElementById('mideva-form');
-    const name = form.querySelector('input[type="text"]').value;
-    const type = form.querySelector('select').value;
-    const amount = type === 'work' ? parseFloat(form.querySelector('input[type="number"]').value) || 0 : 0;
-    const deadline = form.querySelector('input[type="date"]').value;
-
-    if (!name || !deadline) return alert('Name and deadline required.');
-
-    tasks.push({
-        id: nextId++,
-        task_name: name,
-        type,
-        amount,
-        deadline,
-        done: false,
-        completed_date: '',
-        person
-    });
-
-    renderTasks();
-    form.reset();
-    form.querySelector('input[type="number"]').style.display = 'none';
-}
-
-function markDone(id, checked) {
-    const task = tasks.find(t => t.id === id);
-    if (task) {
-        task.done = checked;
-        task.completed_date = checked ? getCurrentDateISO() : '';
-        renderTasks();
+    const amountInput = select.parentNode.querySelector('input[type="number"]');
+    if (select.value === 'work') {
+        amountInput.style.display = 'inline';
+        amountInput.required = true;
+    } else {
+        amountInput.style.display = 'none';
+        amountInput.required = false;
     }
 }
 
+function showTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.tabs button').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(tabId).style.display = 'block';
+    document.querySelector(`button[onclick="showTab('${tabId}')"]`).classList.add('active');
+}
+
+// === Task Functions ===
+function addTask(person) {
+    const form = document.getElementById(person.toLowerCase() + '-form');
+    const inputs = form.querySelectorAll('input, select');
+    const name = inputs[0].value.trim();
+    const type = inputs[1].value;
+    const amount = type === 'work' ? parseFloat(inputs[2].value) || 0 : 0;
+    const deadline = inputs[3].value;
+
+    if (!name || !deadline) {
+        alert('Please fill in task name and deadline.');
+        return;
+    }
+
+    const newTask = {
+        id: nextId++,
+        task_name: name,
+        type: type,
+        amount: amount,
+        deadline: deadline,
+        done: false,
+        completed_date: '',
+        person: person
+    };
+
+    tasksRef.push(newTask); // Firebase auto-generates unique key
+
+    form.reset();
+    inputs[2].style.display = 'none'; // Hide amount field
+}
+
+function markDone(taskKey, checked) {
+    const updates = {
+        done: checked,
+        completed_date: checked ? getCurrentDateISO() : ''
+    };
+    tasksRef.child(taskKey).update(updates);
+}
+
+// === Rendering ===
 function renderTasks() {
-    ['gachara', 'mideva'].forEach(p => {
-        const tableBody = document.getElementById(`${p}-table`).querySelector('tbody');
-        tableBody.innerHTML = '';
-        tasks.filter(t => t.person.toLowerCase() === p).forEach(t => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${t.task_name}</td>
-                <td>${t.type}</td>
-                <td>${t.amount}</td>
-                <td>${t.deadline}</td>
-                <td><input type="checkbox" ${t.done ? 'checked' : ''} onchange="markDone(${t.id}, this.checked)"></td>
-            `;
-            tableBody.appendChild(row);
-        });
+    ['gachara', 'mideva'].forEach(person => {
+        const tbody = document.getElementById(`${person}-table`).querySelector('tbody');
+        tbody.innerHTML = '';
+        tasks
+            .filter(t => t.person.toLowerCase() === person)
+            .forEach(task => {
+                const tr = document.createElement('tr');
+                if (task.done) tr.classList.add('done');
+                tr.innerHTML = `
+                    <td>${task.task_name}</td>
+                    <td>${task.type}</td>
+                    <td>${task.amount > 0 ? task.amount : '-'}</td>
+                    <td>${task.deadline}</td>
+                    <td><input type="checkbox" ${task.done ? 'checked' : ''} onchange="markDone('${task.fbKey}', this.checked)"></td>
+                `;
+                tbody.appendChild(tr);
+            });
     });
+
     renderReminders();
     renderEarnings();
 }
@@ -81,124 +124,91 @@ function renderTasks() {
 function calculateOverdue(deadline) {
     const today = new Date(getCurrentDateISO());
     const due = new Date(deadline);
-    return Math.floor((today - due) / (1000 * 60 * 60 * 24));
+    const diffDays = Math.floor((today - due) / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : 0;
 }
 
 function renderReminders() {
-    const tableBody = document.getElementById('reminders-table').querySelector('tbody');
-    tableBody.innerHTML = '';
-    const undone = tasks.filter(t => !t.done).map(t => ({ ...t, overdue: calculateOverdue(t.deadline) }));
-    undone.sort((a, b) => b.overdue - a.overdue);
-    undone.forEach(t => {
-        if (t.overdue > 0 || true) { // Show all undone, but sorted
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${t.person}</td>
-                <td>${t.task_name}</td>
-                <td>${t.deadline}</td>
-                <td>${t.overdue > 0 ? t.overdue : 0}</td>
-            `;
-            tableBody.appendChild(row);
-        }
+    const tbody = document.getElementById('reminders-table').querySelector('tbody');
+    tbody.innerHTML = '';
+
+    const overdueTasks = tasks
+        .filter(t => !t.done)
+        .map(t => ({ ...t, overdueDays: calculateOverdue(t.deadline) }))
+        .sort((a, b) => b.overdueDays - a.overdueDays);
+
+    overdueTasks.forEach(task => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${task.person}</td>
+            <td>${task.task_name}</td>
+            <td>${task.deadline}</td>
+            <td>${task.overdueDays > 0 ? task.overdueDays : 'Not yet'}</td>
+        `;
+        tbody.appendChild(tr);
     });
 }
 
-function getWeekNumber(date) {
-    const d = new Date(date);
-    const dayNum = d.getUTCDay() || 7;
+function getWeekNumber(dateStr) {
+    const d = new Date(dateStr);
+    const dayNum = (d.getUTCDay() + 6) % 7 + 1;
     d.setUTCDate(d.getUTCDate() + 4 - dayNum);
     const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
     return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
 }
 
-function getMonth(date) {
-    return new Date(date).getUTCMonth() + 1;
-}
-
 function renderEarnings() {
-    const summary = document.getElementById('earnings-summary');
-    summary.innerHTML = '';
+    const container = document.getElementById('earnings-summary');
+    container.innerHTML = '';
 
     const today = getCurrentDateISO();
     const currentWeek = getWeekNumber(today);
-    const currentMonth = getMonth(today);
     const currentYear = new Date(today).getUTCFullYear();
+    const currentMonth = new Date(today).getUTCMonth() + 1;
 
-    const completedWork = tasks.filter(t => t.done && t.type === 'work');
+    const workDone = tasks.filter(t => t.done && t.type === 'work');
 
-    function sumBy(filterFn) {
-        return completedWork.filter(filterFn).reduce((sum, t) => sum + t.amount, 0);
-    }
+    const sum = (filter) => workDone.filter(filter).reduce((s, t) => s + t.amount, 0);
 
-    const dailyG = sumBy(t => t.completed_date === today && t.person === 'Gachara');
-    const dailyM = sumBy(t => t.completed_date === today && t.person === 'Mideva');
-    const weeklyG = sumBy(t => getWeekNumber(t.completed_date) === currentWeek && new Date(t.completed_date).getUTCFullYear() === currentYear && t.person === 'Gachara');
-    const weeklyM = sumBy(t => getWeekNumber(t.completed_date) === currentWeek && new Date(t.completed_date).getUTCFullYear() === currentYear && t.person === 'Mideva');
-    const monthlyG = sumBy(t => getMonth(t.completed_date) === currentMonth && new Date(t.completed_date).getUTCFullYear() === currentYear && t.person === 'Gachara');
-    const monthlyM = sumBy(t => getMonth(t.completed_date) === currentMonth && new Date(t.completed_date).getUTCFullYear() === currentYear && t.person === 'Mideva');
+    const dailyG = sum(t => t.completed_date === today && t.person === 'Gachara');
+    const dailyM = sum(t => t.completed_date === today && t.person === 'Mideva');
+    const weeklyG = sum(t => getWeekNumber(t.completed_date) === currentWeek && new Date(t.completed_date).getUTCFullYear() === currentYear && t.person === 'Gachara');
+    const weeklyM = sum(t => getWeekNumber(t.completed_date) === currentWeek && new Date(t.completed_date).getUTCFullYear() === currentYear && t.person === 'Mideva');
+    const monthlyG = sum(t => new Date(t.completed_date).getUTCMonth() + 1 === currentMonth && new Date(t.completed_date).getUTCFullYear() === currentYear && t.person === 'Gachara');
+    const monthlyM = sum(t => new Date(t.completed_date).getUTCMonth() + 1 === currentMonth && new Date(t.completed_date).getUTCFullYear() === currentYear && t.person === 'Mideva');
 
-    summary.innerHTML = `
+    container.innerHTML = `
         <h3>Gachara</h3>
-        <p>Daily: ${dailyG}</p>
-        <p>Weekly: ${weeklyG}</p>
-        <p>Monthly: ${monthlyG}</p>
+        <p>Today: KSh ${dailyG}</p>
+        <p>This Week: KSh ${weeklyG}</p>
+        <p>This Month: KSh ${monthlyG}</p>
+
         <h3>Mideva</h3>
-        <p>Daily: ${dailyM}</p>
-        <p>Weekly: ${weeklyM}</p>
-        <p>Monthly: ${monthlyM}</p>
-        <h3>Total</h3>
-        <p>Daily: ${dailyG + dailyM}</p>
-        <p>Weekly: ${weeklyG + weeklyM}</p>
-        <p>Monthly: ${monthlyG + monthlyM}</p>
+        <p>Today: KSh ${dailyM}</p>
+        <p>This Week: KSh ${weeklyM}</p>
+        <p>This Month: KSh ${monthlyM}</p>
+
+        <h3>Combined 💕</h3>
+        <p>Today: KSh ${dailyG + dailyM}</p>
+        <p>This Week: KSh ${weeklyG + weeklyM}</p>
+        <p>This Month: KSh ${monthlyG + monthlyM}</p>
     `;
 }
 
-function showTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-    document.getElementById(tabId).style.display = 'block';
-}
+// === Real-time Listener ===
+tasksRef.on('value', (snapshot) => {
+    tasks = [];
+    nextId = 1;
+    snapshot.forEach(child => {
+        const task = child.val();
+        task.fbKey = child.key; // Save Firebase key for updates
+        tasks.push(task);
+        if (task.id >= nextId) nextId = task.id + 1;
+    });
+    renderTasks();
+});
 
-function loadCSV() {
-    const file = document.getElementById('upload-csv').files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-        const lines = e.target.result.split('\n').filter(l => l.trim());
-        tasks = [];
-        nextId = 1;
-        if (lines.length > 1) { // Skip header
-            lines.slice(1).forEach(line => {
-                const [id, task_name, type, amount, deadline, done, completed_date, person] = line.split(',');
-                tasks.push({
-                    id: parseInt(id),
-                    task_name,
-                    type,
-                    amount: parseFloat(amount),
-                    deadline,
-                    done: done === 'true',
-                    completed_date,
-                    person
-                });
-                nextId = Math.max(nextId, parseInt(id) + 1);
-            });
-        }
-        renderTasks();
-    };
-    reader.readAsText(file);
-}
-
-function downloadCSV() {
-    const header = 'id,task_name,type,amount,deadline,done,completed_date,person\n';
-    const data = tasks.map(t => `${t.id},${t.task_name},${t.type},${t.amount},${t.deadline},${t.done},${t.completed_date},${t.person}`).join('\n');
-    const blob = new Blob([header + data], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'data.csv';
-    a.click();
-    URL.revokeObjectURL(url);
-}
-
+// === Init ===
 updateDate();
-setInterval(updateDate, 60000); // Update date every minute
-showTab('daily'); // Default tab
+setInterval(updateDate, 60000);
+showTab('daily');
