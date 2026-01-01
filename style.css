@@ -1,4 +1,4 @@
-/* MIDARA - A Shared Diary & Task Tracker */
+/* MIDARA - Fully Responsive Styles */
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -19,15 +19,15 @@ header {
 }
 
 header h1 {
-    font-size: 3.5rem;
+    font-size: 3rem;
     margin: 0;
     font-weight: 700;
-    letter-spacing: 4px;
+    letter-spacing: 3px;
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 header #current-date {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     margin-top: 10px;
     opacity: 0.95;
 }
@@ -40,61 +40,55 @@ header #current-date {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
     margin-bottom: 20px;
     flex-wrap: wrap;
+    gap: 8px;
 }
 
 .tabs button {
     background: none;
     border: none;
-    padding: 12px 24px;
-    font-size: 1.1rem;
+    padding: 12px 20px;
+    font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
     color: #555;
-    position: relative;
+    border-radius: 8px;
+    min-width: 120px;
 }
 
 .tabs button:hover {
+    background: #f0f0ff;
     color: #6a11cb;
 }
 
 .tabs button.active {
-    color: #6a11cb;
+    background: #6a11cb;
+    color: white;
     font-weight: bold;
 }
 
-.tabs button.active::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60%;
-    height: 4px;
-    background: #ff6b6b;
-    border-radius: 2px;
-}
-
 .tab-content {
-    padding: 20px;
+    padding: 15px;
     animation: fadeIn 0.5s ease;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
+/* Responsive Columns */
 .columns {
     display: flex;
-    gap: 30px;
-    justify-content: center;
     flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 0 10px;
 }
 
 .column {
     background: white;
     border-radius: 16px;
-    padding: 25px;
+    padding: 20px;
     width: 100%;
     max-width: 500px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -107,7 +101,7 @@ header #current-date {
 
 .column h2 {
     text-align: center;
-    font-size: 2rem;
+    font-size: 1.8rem;
     margin-bottom: 20px;
     background: linear-gradient(90deg, #ff6b6b, #6a11cb);
     -webkit-background-clip: text;
@@ -115,9 +109,10 @@ header #current-date {
     background-clip: text;
 }
 
+/* Responsive Form */
 form {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 12px;
     margin-bottom: 25px;
 }
@@ -125,7 +120,7 @@ form {
 form input,
 form select,
 form button {
-    padding: 12px;
+    padding: 14px;
     border-radius: 10px;
     border: 1px solid #ddd;
     font-size: 1rem;
@@ -139,13 +134,13 @@ form select:focus {
 }
 
 form button {
-    grid-column: span 2;
     background: linear-gradient(90deg, #6a11cb, #2575fc);
     color: white;
     border: none;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s;
+    font-size: 1.1rem;
 }
 
 form button:hover {
@@ -153,6 +148,7 @@ form button:hover {
     box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
 }
 
+/* Tables */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -160,18 +156,19 @@ table {
     background: #f8f9ff;
     border-radius: 12px;
     overflow: hidden;
+    font-size: 0.95rem;
 }
 
 th {
     background: #6a11cb;
     color: white;
-    padding: 14px;
+    padding: 12px;
     text-align: center;
     font-weight: 600;
 }
 
 td {
-    padding: 12px;
+    padding: 10px;
     text-align: center;
     border-bottom: 1px solid #eee;
 }
@@ -189,74 +186,103 @@ tr.done {
     background: #ff6b6b;
 }
 
-.file-controls {
-    text-align: center;
-    margin: 40px 0;
-}
-
-.file-controls input[type="file"] {
-    padding: 10px;
-    margin-right: 15px;
-}
-
-.file-controls button {
-    background: #ff6b6b;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 1.1rem;
-    transition: all 0.3s;
-}
-
-.file-controls button:hover {
-    background: #ff5252;
-    transform: scale(1.05);
-}
-
-/* Earnings Section */
+/* Earnings */
 #earnings-summary {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
     margin-top: 20px;
 }
 
 #earnings-summary h3 {
-    grid-column: span 2;
+    grid-column: 1 / -1;
     text-align: center;
-    font-size: 1.8rem;
+    font-size: 1.7rem;
     color: #6a11cb;
-    margin: 10px 0;
+    margin: 15px 0;
 }
 
 #earnings-summary p {
     background: white;
-    padding: 15px;
+    padding: 18px;
     border-radius: 12px;
     text-align: center;
     font-size: 1.2rem;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-    border-left: 5px solid #ff6b6b;
+    border-left: 6px solid #ff6b6b;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* === RESPONSIVE BREAKPOINTS === */
+
+/* Tablets and small laptops */
+@media (min-width: 768px) {
     .columns {
-        flex-direction: column;
-        align-items: center;
+        flex-wrap: nowrap;
     }
     
     form {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
     }
     
     form button {
-        grid-column: span 1;
+        grid-column: span 2;
     }
     
     header h1 {
-        font-size: 2.8rem;
+        font-size: 3.5rem;
+    }
+}
+
+/* Large screens */
+@media (min-width: 1024px) {
+    .column {
+        padding: 30px;
+    }
+    
+    header {
+        padding: 40px 20px;
+    }
+    
+    header h1 {
+        font-size: 4rem;
+        letter-spacing: 5px;
+    }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 2.5rem;
+        letter-spacing: 2px;
+    }
+    
+    header #current-date {
+        font-size: 1rem;
+    }
+    
+    .tabs button {
+        padding: 10px 16px;
+        font-size: 0.95rem;
+        min-width: auto;
+    }
+    
+    table {
+        font-size: 0.85rem;
+    }
+    
+    th, td {
+        padding: 8px 4px;
+    }
+    
+    form input,
+    form select,
+    form button {
+        padding: 12px;
+        font-size: 1rem;
+    }
+    
+    #earnings-summary p {
+        font-size: 1.1rem;
+        padding: 14px;
     }
 }
