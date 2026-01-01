@@ -1,4 +1,4 @@
-/* MIDARA - Fully Responsive Styles */
+/* MIDARA - Private Couple's Diary - Fully Responsive */
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -32,6 +32,27 @@ header #current-date {
     opacity: 0.95;
 }
 
+/* Controls */
+.controls button {
+    padding: 12px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.controls button:not(.logout-btn) {
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    color: white;
+}
+
+.logout-btn {
+    background: #ff6b6b;
+    color: white;
+}
+
+/* Tabs */
 .tabs {
     display: flex;
     justify-content: center;
@@ -49,10 +70,9 @@ header #current-date {
     padding: 12px 20px;
     font-size: 1rem;
     cursor: pointer;
-    transition: all 0.3s ease;
-    color: #555;
     border-radius: 8px;
     min-width: 120px;
+    transition: all 0.3s;
 }
 
 .tabs button:hover {
@@ -68,15 +88,9 @@ header #current-date {
 
 .tab-content {
     padding: 15px;
-    animation: fadeIn 0.5s ease;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Responsive Columns */
+/* Columns */
 .columns {
     display: flex;
     flex-wrap: wrap;
@@ -92,11 +106,6 @@ header #current-date {
     width: 100%;
     max-width: 500px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-}
-
-.column:hover {
-    transform: translateY(-5px);
 }
 
 .column h2 {
@@ -109,7 +118,7 @@ header #current-date {
     background-clip: text;
 }
 
-/* Responsive Form */
+/* Forms */
 form {
     display: grid;
     grid-template-columns: 1fr;
@@ -117,20 +126,11 @@ form {
     margin-bottom: 25px;
 }
 
-form input,
-form select,
-form button {
+form input, form select, form button {
     padding: 14px;
     border-radius: 10px;
     border: 1px solid #ddd;
     font-size: 1rem;
-}
-
-form input:focus,
-form select:focus {
-    outline: none;
-    border-color: #6a11cb;
-    box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.2);
 }
 
 form button {
@@ -139,20 +139,12 @@ form button {
     border: none;
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.3s;
-    font-size: 1.1rem;
-}
-
-form button:hover {
-    transform: scale(1.03);
-    box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
 }
 
 /* Tables */
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
     background: #f8f9ff;
     border-radius: 12px;
     overflow: hidden;
@@ -163,8 +155,6 @@ th {
     background: #6a11cb;
     color: white;
     padding: 12px;
-    text-align: center;
-    font-weight: 600;
 }
 
 td {
@@ -173,18 +163,10 @@ td {
     border-bottom: 1px solid #eee;
 }
 
-tr:hover {
-    background: #f0f0ff;
-}
+tr:hover { background: #f0f0ff; }
+tr.done { opacity: 0.7; background: #e8f5e8 !important; }
 
-tr.done {
-    opacity: 0.7;
-    background: #e8f5e8 !important;
-}
-
-#reminders-table th {
-    background: #ff6b6b;
-}
+#reminders-table th { background: #ff6b6b; }
 
 /* Earnings */
 #earnings-summary {
@@ -197,9 +179,8 @@ tr.done {
 #earnings-summary h3 {
     grid-column: 1 / -1;
     text-align: center;
-    font-size: 1.7rem;
+    font-size: 1.8rem;
     color: #6a11cb;
-    margin: 15px 0;
 }
 
 #earnings-summary p {
@@ -207,82 +188,74 @@ tr.done {
     padding: 18px;
     border-radius: 12px;
     text-align: center;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     border-left: 6px solid #ff6b6b;
 }
 
-/* === RESPONSIVE BREAKPOINTS === */
+/* Login Screen */
+#login-screen {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
 
-/* Tablets and small laptops */
+.login-box {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+}
+
+.login-box h1 {
+    background: linear-gradient(90deg, #ff6b6b, #6a11cb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.login-box input {
+    width: 100%;
+    padding: 14px;
+    margin: 12px 0;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    font-size: 1.1rem;
+    box-sizing: border-box;
+}
+
+.login-box button {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+/* Responsive */
 @media (min-width: 768px) {
-    .columns {
-        flex-wrap: nowrap;
-    }
-    
-    form {
-        grid-template-columns: 1fr 1fr;
-    }
-    
-    form button {
-        grid-column: span 2;
-    }
-    
-    header h1 {
-        font-size: 3.5rem;
-    }
+    .columns { flex-wrap: nowrap; }
+    form { grid-template-columns: 1fr 1fr; }
+    form button { grid-column: span 2; }
+    header h1 { font-size: 3.5rem; }
 }
 
-/* Large screens */
-@media (min-width: 1024px) {
-    .column {
-        padding: 30px;
-    }
-    
-    header {
-        padding: 40px 20px;
-    }
-    
-    header h1 {
-        font-size: 4rem;
-        letter-spacing: 5px;
-    }
-}
-
-/* Small phones */
 @media (max-width: 480px) {
-    header h1 {
-        font-size: 2.5rem;
-        letter-spacing: 2px;
-    }
-    
-    header #current-date {
-        font-size: 1rem;
-    }
-    
-    .tabs button {
-        padding: 10px 16px;
-        font-size: 0.95rem;
-        min-width: auto;
-    }
-    
-    table {
-        font-size: 0.85rem;
-    }
-    
-    th, td {
-        padding: 8px 4px;
-    }
-    
-    form input,
-    form select,
-    form button {
-        padding: 12px;
-        font-size: 1rem;
-    }
-    
-    #earnings-summary p {
-        font-size: 1.1rem;
-        padding: 14px;
-    }
+    header h1 { font-size: 2.5rem; }
+    .tabs button { min-width: auto; padding: 10px 16px; }
+    table { font-size: 0.85rem; }
+    th, td { padding: 8px 4px; }
 }
